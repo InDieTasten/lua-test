@@ -7,7 +7,7 @@ function os.capture(cmd, raw)
   s = string.gsub(s, '^%s+', '')
   s = string.gsub(s, '%s+$', '')
   s = string.gsub(s, '[\n\r]+', ' ')
-  return s.."break"
+  return s
 end
 
 function getTermSize()
