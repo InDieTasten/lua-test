@@ -7,7 +7,7 @@ function os.capture(cmd, raw)
   s = string.gsub(s, '^%s+', '')
   s = string.gsub(s, '%s+$', '')
   s = string.gsub(s, '[\n\r]+', ' ')
-  return s
+  return s.."break"
 end
 
 function getTermSize()
@@ -18,13 +18,41 @@ function clear()
   os.execute("clear")
 end
 
-clear()
-local w,h = getTermSize()
-
-print(string.rep("*", w))
-for i=1,h-2 do
-  print("*"..string.rep(" ", w-2).."*")
+function main()
+  clear()
+  local w,h = getTermSize()
+  print(string.rep("*", w))
+  for i=1,h-2 do
+    print("*"..string.rep(" ", w-2).."*")
+  end
+  io.write(string.rep("*", w))
+  io.flush()
+  os.execute("tput cup 1 1")
 end
-io.write(string.rep("*", w))
-io.flush()
-os.execute("tput cup 1 1")
+
+-- [[ TESTS ]] --
+tests = tests or {}
+tests.os = tests.os or {}
+function tests.os.capture()
+  local result = os.capture("echo test_string")
+  assert(result == "test_string", "Exptected \"test_string\", got \""..result.."\".")
+end
+
+local args = {...}
+if args[1] == "test" then
+  function run_all_deep(prefix, testset)
+    for k,v in pairs(testset) do
+      if type(v) == "table" then
+        run_all_deep(prefix.."."..k, v)
+      elseif type(v) == "function" then
+        io.write("[Test] "..prefix.."."..k.." >>> ")
+        io.flush()
+        v()
+        print("PASSED")
+      end
+    end
+  end
+  run_all_deep("tests", tests)
+else
+  main()
+end
