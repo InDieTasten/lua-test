@@ -19,4 +19,12 @@ function clear()
 end
 
 clear()
-print(getTermSize())
+local w,h = getTermSize()
+
+print(string.rep("*", w))
+for i=1,h-2 do
+  print("*"..string.rep(" ", w-2).."*")
+end
+io.write(string.rep("*", w))
+io.flush()
+os.execute("tput cup 1 1")
